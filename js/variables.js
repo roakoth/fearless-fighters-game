@@ -29,9 +29,21 @@ var gameWrapper = $("#game-wrapper");
 //Get the modal
 var gameRulesSection = $("#game-rules");
 // Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+var span = document.getElementsByClassName("close");
 //Get the button that opens the modal
 var rulesButton = $("#rules-button");
+
+// The modal displaying player user input fields
+var playerNamesSection = document.getElementById("player-names-section");
+
+// Player users input fields
+var player1User = document.getElementById("player1Name");
+var player2User = document.getElementById("player2Name");
+
+//player user names section
+var playerNamesSection = $("#player-names-section");
+//submit button that gets player users value
+var playerNamesButton = $("#player-names-button");
 
 var player1Name = $("#player-1-data-div .player-name");
 var player1Picture = $("#player-1-data-div .player-picture");

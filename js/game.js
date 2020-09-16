@@ -26,6 +26,8 @@ var Game = {
     startButton.on("click", function () {
       startScreenWrapper.hide();
       gameWrapper.show();
+      playerNamesSection.show();
+      playerNamesSection.style.display = "block";
       gameRulesSection.hide();
     });
     //when the user clicks on the button open the modal
@@ -35,11 +37,29 @@ var Game = {
     });
 
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
+    span[0].onclick = function () {
       gameRulesSection.hide();
       startScreenWrapper.show();
       gameRulesSection.style.display = "none";
     };
+
+    span[1].onclick = function () {
+      playerNamesSection.hide();
+      gameWrapper.show();
+      playerNamesSection.style.display = "none";
+    };
+
+    playerNamesButton.on("click", function () {
+      if (player1User.value === "" && player2User.value === "") {
+        player1Name.text(player1.name);
+        player2Name.text(player2.name);
+      } else {
+        player1Name.text(player1User.value);
+        player2Name.text(player2User.value);
+      }
+      gameWrapper.show();
+      playerNamesSection.hide();
+    });
   },
 
   // Getting random number from zero to maximum parameter
@@ -317,46 +337,12 @@ var Game = {
         // Move player right
         if (clickedX > playerX) {
           while (playerX !== clickedX) {
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerX = Number(playerCell.getAttribute("x"));
-            playerCell.classList.remove(activePlayer);
-            nextCell = document.querySelector(
-              "td[x='" + (playerX + 1) + "'][y='" + playerY + "']"
-            );
-            nextCell.classList.add(activePlayer);
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerX = Number(playerCell.getAttribute("x"));
-            if (playerCell.classList.contains("weapon")) {
-              Game.changeWeapon();
-            } else {
-              Game.checkFightPosition();
-            }
+            Game.movePlayersToNextCell(1, 0);
           }
         } else {
           // Move player left
           while (playerX !== clickedX) {
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerX = Number(playerCell.getAttribute("x"));
-            playerCell.classList.remove(activePlayer);
-            nextCell = document.querySelector(
-              "td[x='" + (playerX - 1) + "'][y='" + playerY + "']"
-            );
-            nextCell.classList.add(activePlayer);
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerX = Number(playerCell.getAttribute("x"));
-            if (playerCell.classList.contains("weapon")) {
-              Game.changeWeapon();
-            } else {
-              Game.checkFightPosition();
-            }
+            Game.movePlayersToNextCell(-1, 0);
           }
         }
       }
@@ -366,46 +352,12 @@ var Game = {
         // Move player down
         if (playerY < clickedY) {
           while (playerY !== clickedY) {
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerY = Number(playerCell.getAttribute("y"));
-            playerCell.classList.remove(activePlayer);
-            nextCell = document.querySelector(
-              "td[x='" + playerX + "'][y='" + (playerY + 1) + "']"
-            );
-            nextCell.classList.add(activePlayer);
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerY = Number(playerCell.getAttribute("y"));
-            if (playerCell.classList.contains("weapon")) {
-              Game.changeWeapon();
-            } else {
-              Game.checkFightPosition();
-            }
+            Game.movePlayersToNextCell(0, 1);
           }
         } else {
           // Move player up
           while (playerY !== clickedY) {
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerY = Number(playerCell.getAttribute("y"));
-            playerCell.classList.remove(activePlayer);
-            nextCell = document.querySelector(
-              "td[x='" + playerX + "'][y='" + (playerY - 1) + "']"
-            );
-            nextCell.classList.add(activePlayer);
-            playerCell = document.querySelector(
-              "td[class*=" + activePlayer + "]"
-            );
-            playerY = Number(playerCell.getAttribute("y"));
-            if (playerCell.classList.contains("weapon")) {
-              Game.changeWeapon();
-            } else {
-              Game.checkFightPosition();
-            }
+            Game.movePlayersToNextCell(0, -1);
           }
         }
       }
@@ -422,6 +374,26 @@ var Game = {
         table.removeEventListener("mousedown", Game.movePlayers);
         Game.showBattleMessage();
       }
+    }
+  },
+
+  //moving players to next cell
+  movePlayersToNextCell(positionX, positionY) {
+    playerCell = document.querySelector("td[class*=" + activePlayer + "]");
+    playerX = Number(playerCell.getAttribute("x"));
+    playerY = Number(playerCell.getAttribute("y"));
+    playerCell.classList.remove(activePlayer);
+    nextCell = document.querySelector(
+      "td[x='" + (playerX + positionX) + "'][y='" + (playerY + positionY) + "']"
+    );
+    nextCell.classList.add(activePlayer);
+    playerCell = document.querySelector("td[class*=" + activePlayer + "]");
+    playerX = Number(playerCell.getAttribute("x"));
+    playerY = Number(playerCell.getAttribute("y"));
+    if (playerCell.classList.contains("weapon")) {
+      Game.changeWeapon();
+    } else {
+      Game.checkFightPosition();
     }
   },
 
@@ -516,43 +488,35 @@ var Game = {
 
   // Checking all adjacent cells on the player's movement way for presence of other player
   checkFightPosition: function () {
-    // Checking cell on player's right side (if it exists)
+    //Checking cell on player's right side (if it exists)
+
     if (playerX !== gridXFields) {
-      checkedCell = document.querySelector(
-        "td[x='" + (playerX + 1) + "'][y='" + playerY + "']"
-      );
-      if (checkedCell.classList.contains(notActivePlayer)) {
-        fight = true;
-      }
+      Game.setCheckedCell(1, 0);
     }
     // Checking cell on player's left side (if it exists)
     if (playerX !== 1) {
-      checkedCell = document.querySelector(
-        "td[x='" + (playerX - 1) + "'][y='" + playerY + "']"
-      );
-      if (checkedCell.classList.contains(notActivePlayer)) {
-        fight = true;
-      }
+      Game.setCheckedCell(-1, 0);
     }
     // Checking cell below player (if it exists)
     if (playerY !== gridYFields) {
-      checkedCell = document.querySelector(
-        "td[x='" + playerX + "'][y='" + (playerY + 1) + "']"
-      );
-      if (checkedCell.classList.contains(notActivePlayer)) {
-        fight = true;
-      }
+      Game.setCheckedCell(0, 1);
     }
     // Checking cell above player (if it exists)
     if (playerY !== 1) {
-      checkedCell = document.querySelector(
-        "td[x='" + playerX + "'][y='" + (playerY - 1) + "']"
-      );
-      if (checkedCell.classList.contains(notActivePlayer)) {
-        fight = true;
-      }
+      Game.setCheckedCell(0, -1);
     }
   },
+
+  //setting checked cell on x and y axis and checking if it contains other player
+  setCheckedCell: function (positionX, positionY) {
+    checkedCell = document.querySelector(
+      "td[x='" + (playerX + positionX) + "'][y='" + (playerY + positionY) + "']"
+    );
+    if (checkedCell.classList.contains(notActivePlayer)) {
+      fight = true;
+    }
+  },
+
   // Showing battle begins message
   showBattleMessage: function () {
     battleMessageWrapper.show();
