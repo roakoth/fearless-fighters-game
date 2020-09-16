@@ -568,7 +568,7 @@ var Game = {
         gameOverWrapper.show();
         //the winner is announced
         winnerNumber.text("Player 1");
-        winnerName.text(player1.name);
+
         winnerPicture.html('<img src="img/players/aladdin-fight.gif">');
         Game.gameOver();
         return;
@@ -622,7 +622,7 @@ var Game = {
         gameOverWrapper.show();
         //the winner is announced
         winnerNumber.text("Player 2");
-        winnerName.text(player2.name);
+
         winnerPicture.html('<img src="img/players/jafar-move.gif">');
         Game.gameOver();
         return;
